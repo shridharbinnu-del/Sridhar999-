@@ -1,0 +1,47 @@
+//@version=6
+indicator("Intraday Advanced SR v6", overlay=true)
+
+// Inputs
+length = input(14, title="Swing Length")
+showVWAP = input(true, title="Show VWAP")
+
+// Swing Highs and Lows Calculation
+var float swingHigh = na
+var float swingLow = na
+swingHigh := ta.pivothigh(high, length, length)
+swingLow := ta.pivotlow(low, length, length)
+
+plot(swingHigh, color=color.red, style=plot.style_stepline, title="Swing High")
+plot(swingLow, color=color.green, style=plot.style_stepline, title="Swing Low")
+
+// Volume Validation
+volumeValidation = volume > ta.sma(volume, length)
+
+// Fair Value Gaps Calculation
+fvgUpper = close[1] < open ? open[1] : na
+fvgLower = close[1] > open ? close[1] : na
+
+bgcolor(fvgUpper ? color.new(color.red, 90) : na, title="Fair Value Gap Upper")
+bgcolor(fvgLower ? color.new(color.green, 90) : na, title="Fair Value Gap Lower")
+
+// VWAP Calculation
+vwapValue = request.security(syminfo.tickerid, "D", ta.vwap(close))
+if showVWAP
+    plot(vwapValue, color=color.blue, title="VWAP")
+
+// Non-Repaint Logic for 3m and 5m Timeframes
+var lastHigh = na
+var lastLow = na
+if timeframe.isintraday
+    lastHigh := swingHigh
+    lastLow := swingLow
+
+// Alerts (Optional)
+alertcondition(volumeValidation, title="Volume Validated", message="Volume validation succeeded")
+
+// Display
+plotshape(series=swingHigh, color=color.red, style=shape.labelup, location=location.absolute, size=size.small, title="Liquidity Pool")
+plotshape(series=swingLow, color=color.green, style=shape.labeldown, location=location.absolute, size=size.small, title="Liquidity Pool")
+
+// Order Block Logic
+// Implement order block detection logic here based on your requirements.
