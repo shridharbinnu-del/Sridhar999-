@@ -1,0 +1,22 @@
+//@version=5
+indicator("Intraday Support and Resistance", overlay=true)
+
+// User-defined inputs
+length = input(14, title="Length", minval=1)
+src = input(close, title="Source")
+
+// Calculate support and resistance
+highestHigh = highest(high, length)
+lowestLow = lowest(low, length)
+
+// Plot support and resistance lines
+plot(highestHigh, color=color.red, linewidth=2, title="Resistance")
+plot(lowestLow, color=color.green, linewidth=2, title="Support")
+
+// Background colors for clarity
+bgcolor(close > highestHigh ? color.new(color.red, 90) : na, title="Breakout Zone")
+bgcolor(close < lowestLow ? color.new(color.green, 90) : na, title="Breakdown Zone")
+
+// Alerts
+alertcondition(crossover(close, highestHigh), title="Breakout Alert", message="Price has crossed above resistance")
+alertcondition(crossunder(close, lowestLow), title="Breakdown Alert", message="Price has crossed below support")
