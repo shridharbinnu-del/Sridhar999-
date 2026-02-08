@@ -1,0 +1,19 @@
+//@version=6
+indicator("Advanced Support and Resistance Detector", overlay=true)
+
+// Define input parameters
+length = input(14, title="Length")
+
+// Calculate high and low
+highLevel = highest(high, length)
+lowLevel = lowest(low, length)
+
+// Plot the support and resistance levels
+plot(highLevel, color=color.red, linewidth=2, title="Resistance")
+plot(lowLevel, color=color.green, linewidth=2, title="Support")
+
+// Alerts when price crosses support/resistance levels
+alertcondition(close > highLevel, title="Cross Above Resistance", message="Price crossed above resistance!")
+alertcondition(close < lowLevel, title="Cross Below Support", message="Price crossed below support!")
+
+// Background color for visual
